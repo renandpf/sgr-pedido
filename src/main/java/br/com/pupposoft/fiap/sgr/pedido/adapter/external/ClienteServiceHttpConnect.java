@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class ClienteServiceHttpConnect implements ClienteGateway {
 
-	@Value("${sgr.produto-service.url}")
+	@Value("${sgr.cliente-service.url}")
 	private String baseUrl;
 
 	@Autowired
