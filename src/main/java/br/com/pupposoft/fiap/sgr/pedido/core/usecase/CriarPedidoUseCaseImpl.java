@@ -74,8 +74,9 @@ public class CriarPedidoUseCaseImpl implements CriarPedidoUseCase {
 		  pedido.getItens().forEach(i -> {
 		  		Produto produto = i.getProduto();
 			  	Optional<ProdutoDto> produtoOp = produtoGateway.obterPorId(produto.getId());
-		  		ProdutoDto pDto = produtoOp.orElseThrow(() -> new ProdutoNotFoundException());
+		  		ProdutoDto pDto = produtoOp.orElseThrow(ProdutoNotFoundException::new);
 		  		i.setProduto(Produto.builder().id(pDto.getId()).build());
+		  		i.setValorUnitario(pDto.getValor());
 		  	});
 	  }
 	  
@@ -88,6 +89,7 @@ public class CriarPedidoUseCaseImpl implements CriarPedidoUseCase {
 				  .map(i -> ItemDto.builder()
 						  .produto(ProdutoDto.builder().id(i.getProduto().getId()).build())
 						  .quantidade(i.getQuantidade())
+						  .valorUnitario(i.getValorUnitario().doubleValue())
 						  .build())
 				  .toList();
 

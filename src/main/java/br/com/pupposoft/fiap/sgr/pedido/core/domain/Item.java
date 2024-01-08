@@ -16,6 +16,7 @@ public class Item {
 	@Setter
 	private Produto produto;
 	private Long quantidade;
+	@Setter
 	private BigDecimal valorUnitario;
 	
 	public BigDecimal getValorTotal() {

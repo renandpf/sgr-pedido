@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Getter
@@ -28,6 +29,7 @@ public class ItemEntity {
 
 	private Long produtoId;
 	
+	@Setter
 	@ManyToOne
 	@JoinColumn(name = "pedidoId")
 	private PedidoEntity pedido;

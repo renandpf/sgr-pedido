@@ -32,8 +32,8 @@ public class PedidoEntity {
 	private LocalDate dataConclusao;
 	private String observacao;
 	
-	private Long pagamentoId;
 	private Long clienteId;
+	private Long pagamentoId;
 	
 	@OneToMany(mappedBy = "pedido")
 	private List<ItemEntity> itens;

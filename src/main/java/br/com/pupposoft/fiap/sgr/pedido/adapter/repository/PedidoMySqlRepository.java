@@ -18,6 +18,7 @@ import br.com.pupposoft.fiap.sgr.pedido.core.dto.PedidoDto;
 import br.com.pupposoft.fiap.sgr.pedido.core.dto.ProdutoDto;
 import br.com.pupposoft.fiap.sgr.pedido.core.exception.ErrorToAccessRepositoryException;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.PedidoGateway;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,16 +32,15 @@ public class PedidoMySqlRepository implements PedidoGateway {
 	private ItemEntityRepository itemEntityRepository;
 	
 	@Override
+	@Transactional
 	public Long criar(PedidoDto pedido) {
         try {
-            log.trace("Start pedido={}", pedido);
-
             PedidoEntity pedidoEntity = mapDtoToEntity(pedido);
             pedidoEntityRepository.save(pedidoEntity);
             Long pedidoCreatedId = pedidoEntity.getId();
 
             pedidoEntity.getItens().forEach(ie -> itemEntityRepository.save(ie));
-            log.trace("End pedidoCreatedId={}", pedidoCreatedId);
+
             return pedidoCreatedId;
 
         }
@@ -139,17 +139,15 @@ public class PedidoMySqlRepository implements PedidoGateway {
 		
 		List<ItemEntity> itens = new ArrayList<>();
 		if(pedidoDto.hasItens()) {
-			itens = pedidoDto.getItens().stream().map(i -> {
-				return ItemEntity.builder()
+			itens = pedidoDto.getItens().stream().map(i -> ItemEntity.builder()
 						.id(i.getId())
 						.quantidade(i.getQuantidade())
 						.valorUnitario(i.getValorUnitario())
 						.produtoId(i.getProduto().getId())
-						.build();
-			}).toList();
+						.build()).toList();
 		}
 		
-		return PedidoEntity.builder()
+		PedidoEntity pedidoEntity = PedidoEntity.builder()
 		.id(pedidoDto.getId())
 		.statusId(pedidoDto.getStatusId())
 		.dataCadastro(pedidoDto.getDataCadastro())
@@ -159,6 +157,10 @@ public class PedidoMySqlRepository implements PedidoGateway {
 		.pagamentoId(pedidoDto.hasPagamentos() ? pedidoDto.getPagamentos().get(0).getId() : null)
 		.clienteId(pedidoDto.hasCliente() ? pedidoDto.getCliente().getId() : null)
 		.build();
+		
+		itens.forEach(i -> i.setPedido(pedidoEntity));
+		
+		return pedidoEntity;
 	}	
 	
 }

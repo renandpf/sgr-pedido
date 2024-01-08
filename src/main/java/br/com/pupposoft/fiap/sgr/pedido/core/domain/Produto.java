@@ -9,5 +9,4 @@ import lombok.ToString;
 @Builder
 public class Produto {
 	private Long id;
-
 }
