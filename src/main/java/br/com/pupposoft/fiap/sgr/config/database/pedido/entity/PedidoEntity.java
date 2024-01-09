@@ -33,7 +33,6 @@ public class PedidoEntity {
 	private String observacao;
 	
 	private Long clienteId;
-	private Long pagamentoId;
 	
 	@OneToMany(mappedBy = "pedido")
 	private List<ItemEntity> itens;

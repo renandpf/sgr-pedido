@@ -155,7 +155,6 @@ public class PedidoMySqlRepository implements PedidoGateway {
 		.dataConclusao(pedidoDto.getDataConclusao())
 		.observacao(pedidoDto.getObservacao())
 		.itens(itens)
-		.pagamentoId(pedidoDto.hasPagamentos() ? pedidoDto.getPagamentos().get(0).getId() : null)
 		.clienteId(pedidoDto.hasCliente() ? pedidoDto.getCliente().getId() : null)
 		.build();
 		
