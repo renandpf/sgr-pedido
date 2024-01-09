@@ -15,6 +15,5 @@ public class ItemJson {
 	private Long id;
 	private Long quantidade;
 	private Long produtoId;
-	private String produtoNome;
 	private Double valorUnitario;
 }

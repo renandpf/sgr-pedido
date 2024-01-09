@@ -95,7 +95,7 @@ public class PedidoMySqlRepository implements PedidoGateway {
         try {
             log.trace("Start statusList={}", statusList);
             
-            List<Long> statusIdList = statusList.stream().mapToLong(s -> Status.get(s)).boxed().toList();
+            List<Long> statusIdList = statusList.stream().mapToLong(Status::get).boxed().toList();
             
             List<PedidoEntity> pedidoEntityList = this.pedidoEntityRepository.findByStatusIdIn(statusIdList);
 
@@ -111,7 +111,8 @@ public class PedidoMySqlRepository implements PedidoGateway {
     }
 
 	private PedidoDto mapEntityToDto(PedidoEntity pedidoEntity) {
-		ClienteDto clienteDto = null;
+		ClienteDto clienteDto = 
+				pedidoEntity.getClienteId() == null ? null : ClienteDto.builder().id(pedidoEntity.getClienteId()).build();
 		
 		List<ItemDto> itensDto = pedidoEntity.getItens().stream()
 				.map(ie -> ItemDto.builder()

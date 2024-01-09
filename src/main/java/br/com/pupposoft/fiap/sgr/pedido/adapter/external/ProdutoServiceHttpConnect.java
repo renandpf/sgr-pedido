@@ -69,14 +69,13 @@ public class ProdutoServiceHttpConnect implements ProdutoGateway {
 	}
 
 	private ProdutoDto mapJsonToDto(ProdutoJson produtoJson) {
-		ProdutoDto produtoDto = ProdutoDto.builder()
+		return ProdutoDto.builder()
 				.id(produtoJson.getId())
 				.nome(produtoJson.getNome())
 				.descricao(produtoJson.getDescricao())
 				.valor(produtoJson.getValor())
 				.categoria(produtoJson.getCategoria())
 				.build();
-		return produtoDto;
 	}
 
 }

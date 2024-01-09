@@ -44,7 +44,7 @@ public class PedidoApiController {
     }
     
     @GetMapping("{pedidoId}")
-    public PedidoJson obterPorId(@PathVariable Long pedidoId) {
+    public PedidoJson obterPorId(@PathVariable("pedidoId") Long pedidoId) {
         log.info("Start pedidoId={}", pedidoId);
         PedidoDto pedidoDto = pedidoController.obterPorId(pedidoId);
         PedidoJson pedidoJson = mapDtoToJson(pedidoDto);
@@ -63,14 +63,14 @@ public class PedidoApiController {
     }
 
     @PatchMapping("{id}/status")
-    public void atualizarStatus(@PathVariable Long id, @RequestBody(required = true) PedidoJson pedidoJson) {
+    public void atualizarStatus(@PathVariable("id") Long id, @RequestBody(required = true) PedidoJson pedidoJson) {
         log.info("Start id={}, pedidoJson={}", id, pedidoJson);
         pedidoController.atualizarStatus(id, pedidoJson.getStatus());
         log.trace("End");
     }
     
     @GetMapping("/pagamentos/{idPagamento}")
-    public PedidoJson obterPedidosPorIdentificadorPagamento(@PathVariable String idPagamento) {
+    public PedidoJson obterPedidosPorIdentificadorPagamento(@PathVariable("idPagamento") String idPagamento) {
         log.trace("Start identificadorPagamento={}", idPagamento);
         PedidoDto pagamentoDto = pedidoController.obterPorIdentificadorPagamento(idPagamento);
         PedidoJson pedidoJson = mapDtoToJson(pagamentoDto);
@@ -89,7 +89,6 @@ public class PedidoApiController {
 		.itens(dto.getItens().stream().map(i -> ItemJson.builder()
 				.id(i.getId())
 				.produtoId(i.getProduto().getId())
-				.produtoNome(i.getProduto().getNome())
 				.quantidade(i.getQuantidade())
 				.valorUnitario(i.getValorUnitario())
 				.build()).toList())
