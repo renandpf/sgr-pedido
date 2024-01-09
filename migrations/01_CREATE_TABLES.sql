@@ -5,7 +5,6 @@ CREATE TABLE `Pedido` (
   `dataConclusao` datetime DEFAULT NULL,
   `observacao` varchar(255) DEFAULT NULL,
   `clienteId` int DEFAULT NULL,
-  `pagamentoId` int DEFAULT NULL,
   PRIMARY KEY (`id`)
 );
 
