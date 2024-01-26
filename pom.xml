@@ -4,9 +4,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>br.com.wehandle</groupId>
 	<artifactId>sgr-pedido</artifactId>
-	<version>1.1.0</version>
+	<version>1.2.0</version>
 	<packaging>jar</packaging>
 	<name>Sistema de Gestão de Refeição - Pedido Service</name>
+
+	<properties>
+		<sonar.projectKey>renandpf_sgr-pedido</sonar.projectKey>
+	</properties>
+
 
 	<dependencyManagement>
 		<dependencies>
