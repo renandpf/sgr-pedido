@@ -1,39 +1,22 @@
 package br.com.pupposoft.fiap.sgr.pedido.core.controller;
 
-import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomDouble;
-import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomLocalDate;
 import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomLong;
 import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomString;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import br.com.pupposoft.fiap.sgr.config.database.pedido.entity.PedidoEntity;
-import br.com.pupposoft.fiap.sgr.config.database.pedido.repository.ItemEntityRepository;
-import br.com.pupposoft.fiap.sgr.config.database.pedido.repository.PedidoEntityRepository;
 import br.com.pupposoft.fiap.sgr.pedido.core.domain.Status;
-import br.com.pupposoft.fiap.sgr.pedido.core.dto.ClienteDto;
-import br.com.pupposoft.fiap.sgr.pedido.core.dto.ItemDto;
 import br.com.pupposoft.fiap.sgr.pedido.core.dto.PedidoDto;
-import br.com.pupposoft.fiap.sgr.pedido.core.dto.ProdutoDto;
-import br.com.pupposoft.fiap.sgr.pedido.core.exception.ErrorToAccessRepositoryException;
 import br.com.pupposoft.fiap.sgr.pedido.core.usecase.AtualizarStatusPedidoUseCase;
 import br.com.pupposoft.fiap.sgr.pedido.core.usecase.CriarPedidoUseCase;
 import br.com.pupposoft.fiap.sgr.pedido.core.usecase.ObterPedidoUseCase;
