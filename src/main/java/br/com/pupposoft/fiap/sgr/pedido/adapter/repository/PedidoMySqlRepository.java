@@ -91,6 +91,7 @@ public class PedidoMySqlRepository implements PedidoGateway {
 	}
 
 	@Override
+	@Transactional
 	public List<PedidoDto> obterPorStatus(List<Status> statusList) {
         try {
             log.trace("Start statusList={}", statusList);
