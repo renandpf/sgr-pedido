@@ -1,12 +1,18 @@
 package br.com.pupposoft.fiap.sgr.pedido.adapter.web;
 
 import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomLong;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +26,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.pupposoft.fiap.sgr.pedido.adapter.web.json.PedidoJson;
 import br.com.pupposoft.fiap.sgr.pedido.core.controller.PedidoController;
 import br.com.pupposoft.fiap.sgr.pedido.core.domain.Status;
+import br.com.pupposoft.fiap.sgr.pedido.core.dto.ClienteDto;
+import br.com.pupposoft.fiap.sgr.pedido.core.dto.ItemDto;
+import br.com.pupposoft.fiap.sgr.pedido.core.dto.PagamentoDto;
+import br.com.pupposoft.fiap.sgr.pedido.core.dto.PedidoDto;
+import br.com.pupposoft.fiap.sgr.pedido.core.dto.ProdutoDto;
 import br.com.pupposoft.fiap.sgr.pedido.core.exception.PedidoNotFoundException;
 
 @WebMvcTest(PedidoApiController.class)
@@ -32,6 +43,35 @@ class PedidoApiControllerIntTest {
 	private PedidoController pedidoController;
 	
 	private ObjectMapper objectMapper = new ObjectMapper();
+	
+	@Test
+	void shouldSucessOnObterEmAndamento() throws Exception {
+		
+		PedidoDto pedidoDto = PedidoDto.builder()
+				.id(1L)
+				.observacao("AAA")
+				.statusId(2L)
+				.dataCadastro(LocalDate.of(2023, Month.JANUARY, 28))
+				.dataConclusao(LocalDate.of(2023, Month.JANUARY, 28))
+				.cliente(ClienteDto.builder().id(3L).build())
+				.itens(Arrays.asList(ItemDto.builder()
+						.id(4L)
+						.produto(ProdutoDto.builder().id(20L).build())
+						.quantidade(5L)
+						.valorUnitario(55D)
+						.build()))
+				.pagamentos(Arrays.asList(PagamentoDto.builder().id(5L).build()))
+				.build();
+		
+		doReturn(Arrays.asList(pedidoDto)).when(pedidoController).obterEmAndamento();
+		
+		this.mockMvc.perform(get("/sgr/pedidos/andamento"))
+		.andDo(print())
+		.andExpect(status().isOk())
+		.andExpect(content().json("[{\"id\":1,\"observacao\":\"AAA\",\"status\":\"PAGO\",\"dataCadastro\":\"2023-01-28\",\"dataConclusao\":\"2023-01-28\",\"clienteId\":3,\"itens\":[{\"id\":4,\"quantidade\":5,\"produtoId\":20,\"valorUnitario\":55.0}]}]"));
+		
+		verify(pedidoController).obterEmAndamento();
+	}
 	
 	@Test
 	void shouldSucessOnAtualizarStatus() throws Exception {
