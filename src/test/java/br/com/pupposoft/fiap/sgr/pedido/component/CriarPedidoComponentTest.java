@@ -54,14 +54,14 @@ class CriarPedidoComponentTest {
 				.clienteId(1L)
 				.build();
 		
-		final String pedidoResponseBodyStr = "{\n"
+		final String clienteResponseBodyStr = "{\n"
 				+ "  \"id\": 1,\n"
 				+ "  \"nome\": \"Exemplo Cliente\",\n"
 				+ "  \"cpf\": \"123.456.789-00\",\n"
 				+ "  \"email\": \"cliente@example.com\"\n"
 				+ "}"; 
 		
-		stubFor(get("/sgr/gerencial/clientes/" + pedidoJson.getClienteId()).willReturn(okJson(pedidoResponseBodyStr)));
+		stubFor(get("/sgr/gerencial/clientes/" + pedidoJson.getClienteId()).willReturn(okJson(clienteResponseBodyStr)));
 		
 		List<PedidoEntity> pedidosExistentes = pedidoEntityRepository.findAll();
 		assertTrue(pedidosExistentes.isEmpty());
