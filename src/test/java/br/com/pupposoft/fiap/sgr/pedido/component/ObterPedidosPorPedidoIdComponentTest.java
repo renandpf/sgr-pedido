@@ -3,12 +3,8 @@ package br.com.pupposoft.fiap.sgr.pedido.component;
 import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomLocalDate;
 import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomLong;
 import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomString;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.util.Arrays;
 
@@ -29,21 +25,17 @@ import br.com.pupposoft.fiap.sgr.config.database.pedido.repository.ItemEntityRep
 import br.com.pupposoft.fiap.sgr.config.database.pedido.repository.PedidoEntityRepository;
 import br.com.pupposoft.fiap.sgr.pedido.adapter.web.PedidoApiController;
 import br.com.pupposoft.fiap.sgr.pedido.adapter.web.json.PedidoJson;
-import br.com.pupposoft.fiap.sgr.pedido.core.exception.PagamentoNotFoundException;
-import br.com.pupposoft.fiap.sgr.pedido.core.gateway.PagamentoGateway;
+import br.com.pupposoft.fiap.sgr.pedido.core.exception.PedidoNotFoundException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SgrPedidoService.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @ActiveProfiles("test")
 @WireMockTest
-class ObterPedidosPorIdentificadorPagamentoComponentTest extends ComponentTestBase {
+class ObterPedidosPorPedidoIdComponentTest extends ComponentTestBase {
 
 	@Autowired
 	private PedidoApiController pedidoApiController;
 	
-    @Autowired
-    private PagamentoGateway pagamentoGateway;
-
     @Autowired
     private PedidoEntityRepository pedidoEntityRepository;
     
@@ -58,12 +50,8 @@ class ObterPedidosPorIdentificadorPagamentoComponentTest extends ComponentTestBa
 	@Test
 	void shouldSucess(WireMockRuntimeInfo wmRuntimeInfo) {
 		
-		setField(pagamentoGateway, "baseUrl", wmRuntimeInfo.getHttpBaseUrl());
-		
-		final String identificadorPagamento = getRandomString();
-		
 		PedidoEntity pedidoEntityA = PedidoEntity.builder()
-				.statusId(2L)
+				.statusId(1L)
 				.dataCadastro(getRandomLocalDate())
 				.dataConclusao(getRandomLocalDate())
 				.observacao(getRandomString())
@@ -77,7 +65,7 @@ class ObterPedidosPorIdentificadorPagamentoComponentTest extends ComponentTestBa
 				.build();
 		
 		PedidoEntity pedidoEntityB = PedidoEntity.builder()
-				.statusId(1L)
+				.statusId(2L)
 				.dataCadastro(getRandomLocalDate())
 				.dataConclusao(getRandomLocalDate())
 				.observacao(getRandomString())
@@ -92,31 +80,46 @@ class ObterPedidosPorIdentificadorPagamentoComponentTest extends ComponentTestBa
 		
 		itemEntityRepository.saveAndFlush(itemEntity);
 		
-		final String pedidoResponseBodyStr = "{\n"
-				+ "  \"id\": 1,\n"
-				+ "  \"identificadorPagamento\": \" "+ identificadorPagamento +" \",\n"
-				+ "  \"pedidoId\": " + pedidoEntityB.getId() + "\n"
-				+ "}"; 
-		
-		stubFor(get("/sgr/pagamentos/identificador-pagamento-externo/" + identificadorPagamento).willReturn(okJson(pedidoResponseBodyStr)));
-		
-
-		
-		 PedidoJson pedidoJsonFound = pedidoApiController.obterPedidosPorIdentificadorPagamento(identificadorPagamento);
+		PedidoJson pedidoJsonFound = pedidoApiController.obterPorId(pedidoEntityA.getId());
 		 
-		 assertEquals(pedidoEntityB.getId(), pedidoJsonFound.getId());
+		assertEquals(pedidoEntityA.getId(), pedidoJsonFound.getId());
 	}
 	
 	@Test
-	void shouldPagamentoNotFoundException(WireMockRuntimeInfo wmRuntimeInfo) {
+	void shouldPedidoNotFoundException(WireMockRuntimeInfo wmRuntimeInfo) {
 		
-		setField(pagamentoGateway, "baseUrl", wmRuntimeInfo.getHttpBaseUrl());
+		PedidoEntity pedidoEntityA = PedidoEntity.builder()
+				.statusId(1L)
+				.dataCadastro(getRandomLocalDate())
+				.dataConclusao(getRandomLocalDate())
+				.observacao(getRandomString())
+				.clienteId(getRandomLong())
+				.build();
 		
-		final String identificadorPagamento = getRandomString();
+		ItemEntity itemEntity = ItemEntity.builder()
+				.quantidade(1L)
+				.valorUnitario(15D)
+				.produtoId(15L)
+				.build();
 		
-		stubFor(get("/sgr/pagamentos/identificador-pagamento-externo/" + identificadorPagamento).willReturn(notFound()));
+		PedidoEntity pedidoEntityB = PedidoEntity.builder()
+				.statusId(2L)
+				.dataCadastro(getRandomLocalDate())
+				.dataConclusao(getRandomLocalDate())
+				.observacao(getRandomString())
+				.clienteId(getRandomLong())
+				.itens(Arrays.asList(itemEntity))
+				.build();
 		
-		 assertThrows(PagamentoNotFoundException.class, () -> pedidoApiController.obterPedidosPorIdentificadorPagamento(identificadorPagamento));
+		itemEntity.setPedido(pedidoEntityB);
+		
+		pedidoEntityRepository.save(pedidoEntityA);
+		pedidoEntityRepository.save(pedidoEntityB);
+		
+		itemEntityRepository.saveAndFlush(itemEntity);
+
+		Long pedidoId = 15L;
+		assertThrows(PedidoNotFoundException.class, () -> pedidoApiController.obterPorId(pedidoId));
 	}
 	
 }
