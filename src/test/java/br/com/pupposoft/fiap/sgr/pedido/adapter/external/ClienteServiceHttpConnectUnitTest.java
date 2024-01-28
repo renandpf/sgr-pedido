@@ -21,18 +21,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import br.com.pupposoft.fiap.sgr.pedido.adapter.external.json.ProdutoJson;
-import br.com.pupposoft.fiap.sgr.pedido.core.dto.ProdutoDto;
+import br.com.pupposoft.fiap.sgr.pedido.adapter.external.json.ClienteJson;
+import br.com.pupposoft.fiap.sgr.pedido.core.dto.ClienteDto;
 import br.com.pupposoft.fiap.sgr.pedido.core.exception.ErrorToAccessProdutoServiceException;
 import br.com.pupposoft.fiap.starter.http.HttpConnectGateway;
 import br.com.pupposoft.fiap.starter.http.dto.HttpConnectDto;
 import br.com.pupposoft.fiap.starter.http.exception.HttpConnectorException;
 
 @ExtendWith(MockitoExtension.class)
-class ProdutoServiceHttpConnectUnitTest {
+class ClienteServiceHttpConnectUnitTest {
 	
 	@InjectMocks
-	private ProdutoServiceHttpConnect produtoServiceHttpConnect;
+	private ClienteServiceHttpConnect clienteServiceHttpConnect;
 	
 	@Mock
 	private HttpConnectGateway httpConnectGateway;
@@ -46,17 +46,17 @@ class ProdutoServiceHttpConnectUnitTest {
 		final String responseBodyStr = getRandomString();
 		doReturn(responseBodyStr).when(httpConnectGateway).get(any(HttpConnectDto.class));
 		
-		ProdutoJson produtoJson = ProdutoJson.builder().build();
-		doReturn(produtoJson).when(mapper).readValue(responseBodyStr, ProdutoJson.class);
+		ClienteJson clienteJson = ClienteJson.builder().build();
+		doReturn(clienteJson).when(mapper).readValue(responseBodyStr, ClienteJson.class);
 		
-		final Long produtoId = getRandomLong();
+		final Long clienteId = getRandomLong();
 		
-		Optional<ProdutoDto> produtoDtoReturnedOP = produtoServiceHttpConnect.obterPorId(produtoId);
-		assertTrue(produtoDtoReturnedOP.isPresent());
+		Optional<ClienteDto> clienteDtoReturnedOP = clienteServiceHttpConnect.obterPorId(clienteId);
+		assertTrue(clienteDtoReturnedOP.isPresent());
 		
-		ProdutoDto produtoDtoReturned = produtoDtoReturnedOP.get();
+		ClienteDto clienteDtoReturned = clienteDtoReturnedOP.get();
 		
-		assertEquals(produtoJson.getId(), produtoDtoReturned.getId());
+		assertEquals(clienteJson.getId(), clienteDtoReturned.getId());
 		//Fazer demais asserts
 	}
 	
@@ -67,19 +67,19 @@ class ProdutoServiceHttpConnectUnitTest {
 		doReturn(404).when(httpConnectorExceptionMock).getHttpStatus();
 		doThrow(httpConnectorExceptionMock).when(httpConnectGateway).get(any(HttpConnectDto.class));
 		
-		final Long produtoId = getRandomLong();
+		final Long clienteId = getRandomLong();
 		
-		Optional<ProdutoDto> produtoDtoReturnedOP = produtoServiceHttpConnect.obterPorId(produtoId);
-		assertFalse(produtoDtoReturnedOP.isPresent());
+		Optional<ClienteDto> clienteDtoReturnedOP = clienteServiceHttpConnect.obterPorId(clienteId);
+		assertFalse(clienteDtoReturnedOP.isPresent());
 	}
 
 	@Test
 	void shouldErrorToAccessProdutoServiceExceptionOnObterPorId() throws Exception {
 		doThrow(new RuntimeException()).when(httpConnectGateway).get(any(HttpConnectDto.class));
 		
-		final Long produtoId = getRandomLong();
+		final Long clienteId = getRandomLong();
 		
-		assertThrows(ErrorToAccessProdutoServiceException.class, () -> produtoServiceHttpConnect.obterPorId(produtoId));
+		assertThrows(ErrorToAccessProdutoServiceException.class, () -> clienteServiceHttpConnect.obterPorId(clienteId));
 		
 	}
 	
