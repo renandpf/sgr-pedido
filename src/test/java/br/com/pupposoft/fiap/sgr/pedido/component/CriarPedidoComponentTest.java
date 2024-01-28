@@ -11,6 +11,7 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,7 +33,7 @@ import br.com.pupposoft.fiap.sgr.pedido.core.gateway.ClienteGateway;
 @TestPropertySource(locations = "classpath:application-test.properties")
 @ActiveProfiles("test")
 @WireMockTest
-class CriarPedidoComponentTest {
+class CriarPedidoComponentTest extends ComponentTestBase {
 
 	@Autowired
 	private PedidoApiController pedidoApiController;
@@ -43,6 +44,11 @@ class CriarPedidoComponentTest {
     @Autowired
     private PedidoEntityRepository pedidoEntityRepository;
 	
+    @BeforeEach
+    public void initEach(){
+    	cleanAllDatabase();
+    }
+    
 	@Test
 	void shouldSucessOnCriar(WireMockRuntimeInfo wmRuntimeInfo) {
 		
