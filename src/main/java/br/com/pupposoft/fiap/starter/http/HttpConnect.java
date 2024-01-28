@@ -1,7 +1,6 @@
 package br.com.pupposoft.fiap.starter.http;
 
 import org.springframework.stereotype.Component;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -9,7 +8,6 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import br.com.pupposoft.fiap.starter.http.dto.HttpConnectDto;
 import br.com.pupposoft.fiap.starter.http.exception.HttpConnectorException;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component
