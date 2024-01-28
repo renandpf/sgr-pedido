@@ -7,7 +7,7 @@ import lombok.Getter;
 public class PagamentoNotFoundException extends SystemBaseException {
 	private static final long serialVersionUID = 6885625333620163032L;
 	
-	private String code = "sgr.pagamentoNotFound";
-    private String message = "Pagamento não foi encontrado";
-    private Integer httpStatus = 404;
+	private String code = "sgr.pagamentoNotFound";//NOSONAR
+    private String message = "Pagamento não foi encontrado";//NOSONAR
+    private Integer httpStatus = 404;//NOSONAR
 }

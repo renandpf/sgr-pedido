@@ -47,8 +47,7 @@ public class HttpConnect implements HttpConnectGateway {
 		int statusCode = 500;
 		String message = e.getMessage();
 		
-		if(e instanceof WebClientResponseException) {
-			WebClientResponseException ex = (WebClientResponseException) e;
+		if(e instanceof WebClientResponseException ex) {
 			statusCode = ex.getStatusCode().value();
 			message = ex.getResponseBodyAsString();
 			

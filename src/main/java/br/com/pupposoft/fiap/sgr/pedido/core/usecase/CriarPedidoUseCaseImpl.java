@@ -18,9 +18,7 @@ import br.com.pupposoft.fiap.sgr.pedido.core.gateway.ClienteGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.PedidoGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.ProdutoGateway;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @AllArgsConstructor
 public class CriarPedidoUseCaseImpl implements CriarPedidoUseCase {
 
@@ -32,7 +30,6 @@ public class CriarPedidoUseCaseImpl implements CriarPedidoUseCase {
 	
 	@Override
 	public Long criar(PedidoDto pedidoDto) {
-	    log.trace("Start pedidoDto={}", pedidoDto);
 	    Pedido pedido = mapDtoToDomain(pedidoDto);
 
 	    this.verificaRemoveClienteInexistente(pedido);
@@ -40,9 +37,7 @@ public class CriarPedidoUseCaseImpl implements CriarPedidoUseCase {
 
 	    pedido.setStatus(Status.RECEBIDO);//Execução de regras dentro do domain
 
-	    Long pedidoId = this.pedidoGateway.criar(mapDomainToDto(pedido));
-	    log.trace("End pedidoId={}", pedidoId);
-	    return pedidoId;
+	    return this.pedidoGateway.criar(mapDomainToDto(pedido));
 	}
 
 

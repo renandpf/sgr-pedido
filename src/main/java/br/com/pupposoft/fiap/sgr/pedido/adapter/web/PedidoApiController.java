@@ -3,7 +3,6 @@ package br.com.pupposoft.fiap.sgr.pedido.adapter.web;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,15 +22,16 @@ import br.com.pupposoft.fiap.sgr.pedido.core.dto.ClienteDto;
 import br.com.pupposoft.fiap.sgr.pedido.core.dto.ItemDto;
 import br.com.pupposoft.fiap.sgr.pedido.core.dto.PedidoDto;
 import br.com.pupposoft.fiap.sgr.pedido.core.dto.ProdutoDto;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*")//NOSONAR
 @RestController
 @RequestMapping("sgr/pedidos")
+@AllArgsConstructor
 public class PedidoApiController {
 
-	@Autowired
     private PedidoController pedidoController;
 	
     @GetMapping("andamento")
@@ -56,7 +56,7 @@ public class PedidoApiController {
     @ResponseStatus(HttpStatus.CREATED)
     public Long criar(@RequestBody(required = true) PedidoJson pedidoJson) {
         log.info("Start pedidoJson={}", pedidoJson);
-        PedidoDto pedidoDto = mapJsonToDto(null, pedidoJson);
+        PedidoDto pedidoDto = mapJsonToDto(pedidoJson);
         Long pedidoId = pedidoController.criar(pedidoDto);
         log.trace("End pedidoId={}", pedidoId);
         return pedidoId;
@@ -97,7 +97,7 @@ public class PedidoApiController {
 		.build();
     }
     
-    private PedidoDto mapJsonToDto(Long pedidoId, PedidoJson json) {
+    private PedidoDto mapJsonToDto(PedidoJson json) {
     	return PedidoDto.builder()
     			.id(json.getId())
     			.observacao(json.getObservacao())

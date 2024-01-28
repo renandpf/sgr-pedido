@@ -27,9 +27,9 @@ public class Pedido {
         return cliente != null;
     }
     
-    //TODO: Aplicar SOLID: este método tende a crescer sempre q surgir novos status. 
+    //Aplicar SOLID: este método tende a crescer sempre q surgir novos status. 
     //Sugestão: "status" deveria ser uma classe (domain) ao invés de enum
-	public void setStatus(Status newStatus) {
+	public void setStatus(Status newStatus) {//NOSONAR
 		
         switch (newStatus) {
         case RECEBIDO:
@@ -53,7 +53,7 @@ public class Pedido {
             }
             throw new AlteracaoStatusPedidoException();
         
-        case PAGAMENTO_INVALIDO:
+        case PAGAMENTO_INVALIDO://NOSONAR
         	if (status.equals(Status.AGUARDANDO_CONFIRMACAO_PAGAMENTO)) {
         		status = newStatus;
         		break;

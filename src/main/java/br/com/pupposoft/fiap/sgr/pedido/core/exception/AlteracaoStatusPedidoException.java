@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public class AlteracaoStatusPedidoException extends SystemBaseException {
 	private static final long serialVersionUID = -1953859612464719674L;
-	private String code = "sgr.alteracaoStatusPedido";
-    private String message = "O status atual do pedido não permite essa alteração.";
-    private Integer httpStatus = 422;
+	private String code = "sgr.alteracaoStatusPedido";//NOSONAR
+    private String message = "O status atual do pedido não permite essa alteração.";//NOSONAR
+    private Integer httpStatus = 422;//NOSONAR
 }

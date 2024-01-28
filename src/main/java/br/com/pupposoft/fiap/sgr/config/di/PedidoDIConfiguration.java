@@ -16,22 +16,19 @@ import br.com.pupposoft.fiap.sgr.pedido.core.usecase.CriarPedidoUseCase;
 import br.com.pupposoft.fiap.sgr.pedido.core.usecase.CriarPedidoUseCaseImpl;
 import br.com.pupposoft.fiap.sgr.pedido.core.usecase.ObterPedidoUseCase;
 import br.com.pupposoft.fiap.sgr.pedido.core.usecase.ObterPedidoUseCaseImpl;
+import lombok.AllArgsConstructor;
 
 @Configuration
+@AllArgsConstructor
 public class PedidoDIConfiguration {
 
-	@Autowired
 	private PagamentoGateway pagamentoGateway;
 	
-	@Autowired
 	private PedidoGateway pedidoGateway;
 	
-	@Autowired
 	private ClienteGateway clienteGateway;
 	
-	@Autowired
 	private ProdutoGateway produtoGateway;
-
 
 	@Bean
 	@Autowired
