@@ -15,71 +15,6 @@ import reactor.core.publisher.Mono;
 @Component
 public class HttpConnect implements HttpConnectGateway {
 
-	public String postWithRequestBodyMultipart(HttpConnectDto dto) {
-		try {
-			log.trace("Start dto={}", dto);
-			
-			String url = dto.getUrl();
-			
-			if (dto.getUrlParameters() != null) {
-				url = url.concat(dto.getUrlParameters());
-			} 
-			
-			MultiValueMap<String, String> formData = dto.getFormData();
-			
-			final WebClient webClient = WebClient.create();
-			
-			String response = 
-					webClient.post()
-					.uri(url)
-					.body(Mono.just(formData), MultiValueMap.class)
-					.retrieve()
-					.bodyToMono(String.class)
-					.block();
-			
-			log.trace("End response={}", response);
-			
-			return response;
-		} catch (Exception e) {
-			throw processException(e);
-		}
-
-	}
-
-	public String postWhithRequestBody(HttpConnectDto dto) {
-		try {
-			log.trace("Start dto={}", dto);
-			
-			String url = dto.getUrl();
-			
-			if (dto.getUrlParameters() != null) {
-				url = url.concat("?").concat(dto.getUrlParameters());
-			} 
-			
-			String token = dto.getHeaders() == null ? "" : dto.getHeaders().get("Authorization");
-			
-			final WebClient webClient = WebClient.create();
-			
-			String response = 
-					webClient.post()
-					.uri(url)
-					.body(Mono.just(dto.getRequestBody()), dto.getRequestBody().getClass())
-					.header("Content-Type", "application/json")
-					.header("Authorization", token)
-					.retrieve()
-					.bodyToMono(String.class)
-					.block();
-			
-			
-			log.trace("End response={}", response);
-			
-			return response;
-		} catch (Exception e) {
-			throw processException(e);
-		}
-
-	}
-	
 	public String get(HttpConnectDto dto) {
 		try {
 			log.trace("Start dto={}", dto);
@@ -104,37 +39,6 @@ public class HttpConnect implements HttpConnectGateway {
 			log.trace("End response={}",response);
 			return response;
 			
-		} catch (Exception e) {
-			throw processException(e);
-		}
-	}
-
-	@Override
-	public String patch(HttpConnectDto dto) {
-		try {
-			log.trace("Start dto={}", dto);
-			
-			String url = dto.getUrl();
-			
-			if (dto.getUrlParameters() != null) {
-				url = url.concat("?").concat(dto.getUrlParameters());
-			} 
-			
-			final WebClient webClient = WebClient.create();
-			
-			String response = 
-					webClient.patch()
-					.uri(url)
-					.body(Mono.just(dto.getRequestBody()), dto.getRequestBody().getClass())
-					.header("Content-Type", "application/json")
-					.retrieve()
-					.bodyToMono(String.class)
-					.block();
-			
-			
-			log.trace("End response={}", response);
-			
-			return response;
 		} catch (Exception e) {
 			throw processException(e);
 		}
