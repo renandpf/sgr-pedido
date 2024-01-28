@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.pupposoft.fiap.sgr.config.database.pedido.entity.ItemEntity;
@@ -19,16 +18,16 @@ import br.com.pupposoft.fiap.sgr.pedido.core.dto.ProdutoDto;
 import br.com.pupposoft.fiap.sgr.pedido.core.exception.ErrorToAccessRepositoryException;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.PedidoGateway;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
+@AllArgsConstructor
 public class PedidoMySqlRepository implements PedidoGateway {
 
-	@Autowired
 	private PedidoEntityRepository pedidoEntityRepository;
 	
-	@Autowired
 	private ItemEntityRepository itemEntityRepository;
 	
 	@Override
@@ -53,11 +52,9 @@ public class PedidoMySqlRepository implements PedidoGateway {
 	@Override
 	public void atualizarStatus(PedidoDto pedido) {
         try {
-            log.trace("Start pedido={}", pedido);
             PedidoEntity pedidoEntity = this.pedidoEntityRepository.findById(pedido.getId()).get();
             pedidoEntity.setStatusId(pedido.getStatusId());
             this.pedidoEntityRepository.save(pedidoEntity);
-            log.trace("End");
         }
         catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -68,7 +65,6 @@ public class PedidoMySqlRepository implements PedidoGateway {
 	@Override
 	public Optional<PedidoDto> obterPorId(Long pedidoId) {
         try {
-            log.trace("Start pedidoId={}", pedidoId);
             Optional<PedidoEntity> pedidoEntityOp = this.pedidoEntityRepository.findById(pedidoId);
             
             Optional<PedidoDto> pedidoDtoOp = Optional.empty();
@@ -81,7 +77,6 @@ public class PedidoMySqlRepository implements PedidoGateway {
             }
             
             
-            log.trace("End pedidoDtoOp={}", pedidoDtoOp);
             return pedidoDtoOp;
         }
         catch (Exception e) {
@@ -94,16 +89,12 @@ public class PedidoMySqlRepository implements PedidoGateway {
 	@Transactional
 	public List<PedidoDto> obterPorStatus(List<Status> statusList) {
         try {
-            log.trace("Start statusList={}", statusList);
             
             List<Long> statusIdList = statusList.stream().mapToLong(Status::get).boxed().toList();
             
             List<PedidoEntity> pedidoEntityList = this.pedidoEntityRepository.findByStatusIdIn(statusIdList);
 
-            List<PedidoDto> pedidosDtos = pedidoEntityList.stream().map(this::mapEntityToDto).toList();
-            
-            log.trace("End pedidosDtos={}", pedidosDtos);
-            return pedidosDtos;
+            return pedidoEntityList.stream().map(this::mapEntityToDto).toList();
         }
         catch (Exception e) {
             log.error(e.getMessage(), e);

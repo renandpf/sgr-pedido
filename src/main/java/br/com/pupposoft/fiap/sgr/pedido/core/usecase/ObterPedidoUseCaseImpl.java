@@ -24,32 +24,24 @@ public class ObterPedidoUseCaseImpl implements ObterPedidoUseCase {
 	
 	@Override
 	public PedidoDto obterPorId(Long id) {
-        log.trace("Start id={}", id);
-
         Optional<PedidoDto> pedidoOp = this.pedidoGateway.obterPorId(id);
         if (pedidoOp.isEmpty()) {
             log.warn("Pedido não encontrado. id={}", id);
             throw new PedidoNotFoundException();
         }
 
-        PedidoDto pedidoDto = pedidoOp.get();
-        log.trace("End pedidoDto={}", pedidoDto);
-        return pedidoDto;
+        return pedidoOp.get();
 	}
 
 	@Override
 	public List<PedidoDto> obterEmAndamento() {
-        log.trace("Start");
-        List<PedidoDto> pedidos = this.pedidoGateway.obterPorStatus(Arrays.asList(
+        return this.pedidoGateway.obterPorStatus(Arrays.asList(
         		Status.PAGO, 
         		Status.EM_PREPARACAO));
-        log.trace("End pedidos={}", pedidos);
-        return pedidos;
 	}
 
 	@Override
 	public PedidoDto obterPorIdentificadorPagamento(String identificadorPagamento) {
-        log.trace("Start identificadorPagamento={}", identificadorPagamento);
         Optional<PagamentoDto> pagamentoOp = this.pagamentoGateway.obterPorIdentificadorPagamento(identificadorPagamento);
 
         if (pagamentoOp.isEmpty()) {
@@ -58,10 +50,7 @@ public class ObterPedidoUseCaseImpl implements ObterPedidoUseCase {
         }
         
         PagamentoDto pagamentoDto = pagamentoOp.get();
-        PedidoDto pedidoDto = obterPorId(pagamentoDto.getPedido().getId());
-
-        log.trace("End pedidoDto={}", pedidoDto);
-        return pedidoDto;
+        return obterPorId(pagamentoDto.getPedido().getId());
 	}
 
 }
