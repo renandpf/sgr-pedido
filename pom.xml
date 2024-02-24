@@ -4,8 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>br.com.wehandle</groupId>
 	<artifactId>sgr-pedido</artifactId>
-	<version>1.3.0</version>
-	<packaging>jar</packaging>
+	<version>1.4.0</version>
+	<packaging>j1ar</packaging>
 	<name>Sistema de Gestão de Refeição - Pedido Service</name>
 
 	<properties>
