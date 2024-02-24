@@ -75,6 +75,7 @@ public class ClienteServiceHttpConnect implements ClienteGateway {
 				.nome(clienteJson.getNome())
 				.cpf(clienteJson.getCpf())
 				.email(clienteJson.getEmail())
+				.telefone(clienteJson.getTelefone())
 				.build();
 	}	
 

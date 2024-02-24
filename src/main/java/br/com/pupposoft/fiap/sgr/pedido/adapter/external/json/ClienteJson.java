@@ -16,4 +16,5 @@ public class ClienteJson {
     private String nome;
     private String cpf;
     private String email;
+    private String telefone;
 }
