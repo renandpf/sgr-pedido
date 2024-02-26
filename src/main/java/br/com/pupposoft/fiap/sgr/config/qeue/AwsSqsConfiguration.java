@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
 import com.amazon.sqs.javamessaging.ProviderConfiguration;
@@ -30,7 +31,10 @@ public class AwsSqsConfiguration {
 	private String concurrency;
 
 	@Value("${cloud.sqs.status-pedido.endpoint}")
-	private String endpoint;
+	private String endpointStatusPedido;
+	
+	@Value("${cloud.sqs.notificar-cliente.endpoint}")
+	private String endpointNotificarCliente;
 
 	@NonNull
 	private Environment environment;
@@ -38,23 +42,19 @@ public class AwsSqsConfiguration {
 	@Bean
 	public DefaultJmsListenerContainerFactory statusPedidoSqsFactory() {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-		factory.setConnectionFactory(createSQSConnectionFactory());
+		factory.setConnectionFactory(createSQSConnectionFactoryStatusPedido());
 		factory.setDestinationResolver(new DynamicDestinationResolver());
 		factory.setConcurrency(concurrency);
-//		factory.setMessageConverter(jacksonJmsMessageConverter());
 		factory.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
 		return factory;
 	}
+	
+	@Bean
+    public JmsTemplate notifyClienteTemplate() {
+        return new JmsTemplate(createSQSConnectionFactoryNotifyClient());
+    }
 
-//	@Bean // Serialize message content to json using TextMessage
-//	public MessageConverter jacksonJmsMessageConverter() {
-//		MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
-//		converter.setTargetType(MessageType.TEXT);
-//		converter.setTypeIdPropertyName("_type");
-//		return converter;
-//	}
-
-	private SQSConnectionFactory createSQSConnectionFactory() {
+	private SQSConnectionFactory createSQSConnectionFactoryStatusPedido() {
 
 		final SqsClient sqsClient;
 
@@ -62,14 +62,14 @@ public class AwsSqsConfiguration {
 		if(awsProfile == null) {
 			sqsClient = SqsClient.builder()
 					.region(Region.US_WEST_2)
-					.endpointOverride(URI.create(endpoint))
+					.endpointOverride(URI.create(endpointStatusPedido))
 					.credentialsProvider(EnvironmentVariableCredentialsProvider.create())//AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and AWS_SESSION_TOKEN environment variables
 					.build();
 		} else {
 			ProfileCredentialsProvider awsProvider = ProfileCredentialsProvider.create(awsProfile);
 			sqsClient = SqsClient.builder()
 					.region(Region.US_WEST_2)
-					.endpointOverride(URI.create(endpoint))
+					.endpointOverride(URI.create(endpointStatusPedido))
 					.credentialsProvider(awsProvider)
 					.build();
 		}
@@ -77,7 +77,31 @@ public class AwsSqsConfiguration {
 
 		return new SQSConnectionFactory(new ProviderConfiguration(), sqsClient);
 	}
+	
+	private SQSConnectionFactory createSQSConnectionFactoryNotifyClient() {
+		
+		final SqsClient sqsClient;
+		
+		String awsProfile = environment.getProperty("awsProfile");
+		if(awsProfile == null) {
+			sqsClient = SqsClient.builder()
+					.region(Region.US_WEST_2)
+					.endpointOverride(URI.create(endpointNotificarCliente))
+					.credentialsProvider(EnvironmentVariableCredentialsProvider.create())//AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and AWS_SESSION_TOKEN environment variables
+					.build();
+		} else {
+			ProfileCredentialsProvider awsProvider = ProfileCredentialsProvider.create(awsProfile);
+			sqsClient = SqsClient.builder()
+					.region(Region.US_WEST_2)
+					.endpointOverride(URI.create(endpointNotificarCliente))
+					.credentialsProvider(awsProvider)
+					.build();
+		}
+		
+		
+		return new SQSConnectionFactory(new ProviderConfiguration(), sqsClient);
+	}
+	
 
-
-
+	
 }

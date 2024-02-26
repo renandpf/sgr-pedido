@@ -15,14 +15,17 @@ import br.com.pupposoft.fiap.sgr.pedido.core.dto.ItemDto;
 import br.com.pupposoft.fiap.sgr.pedido.core.dto.NotificarDto;
 import br.com.pupposoft.fiap.sgr.pedido.core.dto.PedidoDto;
 import br.com.pupposoft.fiap.sgr.pedido.core.dto.ProdutoDto;
+import br.com.pupposoft.fiap.sgr.pedido.core.exception.ErrorToNotifiyException;
 import br.com.pupposoft.fiap.sgr.pedido.core.exception.ProdutoNotFoundException;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.ClienteGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.NotificarGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.PedidoGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.ProdutoGateway;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @AllArgsConstructor
+@Slf4j
 public class CriarPedidoUseCaseImpl implements CriarPedidoUseCase {
 
 	private ClienteGateway clienteGateway;
@@ -56,11 +59,18 @@ public class CriarPedidoUseCaseImpl implements CriarPedidoUseCase {
 		if(clienteDtoOp.isPresent()) {
 	    	ClienteDto clienteDto = clienteDtoOp.get();
 	    	List<String> destinarios = Arrays.asList(clienteDto.getEmail(), clienteDto.getTelefone());
-	    	notificarGateway.notificar(NotificarDto.builder()
-	    			.assunto("Status pedido: " + pedidoId)
-	    			.conteudo("O status do seu pedido é " + pedido.getStatus().name())
-	    			.destinatarios(destinarios)
-	    			.build());
+	    	
+	    	try {
+	    		notificarGateway.notificar(NotificarDto.builder()
+	    				.assunto("Status pedido: " + pedidoId)
+	    				.conteudo("O status do seu pedido é " + pedido.getStatus().name())
+	    				.destinatarios(destinarios)
+	    				.build());
+				
+			} catch (ErrorToNotifiyException e) {
+				log.warn("Erro ao notificar o cliente");
+			}
+	    	
 	    }
 	}
 
