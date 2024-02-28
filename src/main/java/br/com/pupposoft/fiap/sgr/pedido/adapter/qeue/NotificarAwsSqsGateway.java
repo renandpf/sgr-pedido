@@ -5,6 +5,8 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import br.com.pupposoft.fiap.sgr.pedido.core.dto.NotificarDto;
 import br.com.pupposoft.fiap.sgr.pedido.core.exception.ErrorToNotifiyException;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.NotificarGateway;
@@ -13,12 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @Profile({"prd"})
 @Component
-@AllArgsConstructor
 @Slf4j
 public class NotificarAwsSqsGateway implements NotificarGateway{
 
-	
 	private JmsTemplate notifyClienteTemplate;
+	
+	private ObjectMapper mapper;
 	
 	@Async//Para não travar o fluxo de criação de pedido 
 	@Override
@@ -26,7 +28,9 @@ public class NotificarAwsSqsGateway implements NotificarGateway{
 		
 		try {
 			
-			notifyClienteTemplate.convertAndSend("notificar-qeue", dto);
+			String dtoJsonStr = mapper.writeValueAsString(dto);
+			
+			notifyClienteTemplate.convertAndSend("notificar-qeue", dtoJsonStr);
 			
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
