@@ -7,6 +7,7 @@ import org.springframework.context.annotation.DependsOn;
 
 import br.com.pupposoft.fiap.sgr.pedido.core.controller.PedidoController;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.ClienteGateway;
+import br.com.pupposoft.fiap.sgr.pedido.core.gateway.NotificarGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.PagamentoGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.PedidoGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.ProdutoGateway;
@@ -29,6 +30,8 @@ public class PedidoDIConfiguration {
 	private ClienteGateway clienteGateway;
 	
 	private ProdutoGateway produtoGateway;
+	
+	private NotificarGateway noticarGateway;
 
 	@Bean
 	@Autowired
@@ -39,7 +42,7 @@ public class PedidoDIConfiguration {
 
 	@Bean
 	public CriarPedidoUseCase criarPedidoUseCase() {
-		return new CriarPedidoUseCaseImpl(clienteGateway, produtoGateway, pedidoGateway);
+		return new CriarPedidoUseCaseImpl(clienteGateway, produtoGateway, pedidoGateway, noticarGateway);
 	}
 	
 	@Bean

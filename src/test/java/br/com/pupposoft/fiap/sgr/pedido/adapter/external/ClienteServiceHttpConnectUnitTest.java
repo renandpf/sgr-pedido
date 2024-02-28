@@ -1,6 +1,6 @@
 package br.com.pupposoft.fiap.sgr.pedido.adapter.external;
 
-import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomLong;
+import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.*;
 import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -46,7 +46,13 @@ class ClienteServiceHttpConnectUnitTest {
 		final String responseBodyStr = getRandomString();
 		doReturn(responseBodyStr).when(httpConnectGateway).get(any(HttpConnectDto.class));
 		
-		ClienteJson clienteJson = ClienteJson.builder().build();
+		ClienteJson clienteJson = ClienteJson.builder()
+				.id(getRandomLong())
+				.nome(getRandomString())
+				.cpf(getRandomString())
+				.email(getRandomString())
+				.telefone(getRandomString())
+				.build();
 		doReturn(clienteJson).when(mapper).readValue(responseBodyStr, ClienteJson.class);
 		
 		final Long clienteId = getRandomLong();
@@ -57,7 +63,10 @@ class ClienteServiceHttpConnectUnitTest {
 		ClienteDto clienteDtoReturned = clienteDtoReturnedOP.get();
 		
 		assertEquals(clienteJson.getId(), clienteDtoReturned.getId());
-		//Fazer demais asserts
+		assertEquals(clienteJson.getNome(), clienteDtoReturned.getNome());
+		assertEquals(clienteJson.getCpf(), clienteDtoReturned.getCpf());
+		assertEquals(clienteJson.getEmail(), clienteDtoReturned.getEmail());
+		assertEquals(clienteJson.getTelefone(), clienteDtoReturned.getTelefone());
 	}
 	
 	@Test

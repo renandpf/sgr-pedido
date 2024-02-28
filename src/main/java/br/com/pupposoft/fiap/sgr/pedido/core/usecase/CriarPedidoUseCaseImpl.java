@@ -1,6 +1,7 @@
 package br.com.pupposoft.fiap.sgr.pedido.core.usecase;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,15 +12,20 @@ import br.com.pupposoft.fiap.sgr.pedido.core.domain.Produto;
 import br.com.pupposoft.fiap.sgr.pedido.core.domain.Status;
 import br.com.pupposoft.fiap.sgr.pedido.core.dto.ClienteDto;
 import br.com.pupposoft.fiap.sgr.pedido.core.dto.ItemDto;
+import br.com.pupposoft.fiap.sgr.pedido.core.dto.NotificarDto;
 import br.com.pupposoft.fiap.sgr.pedido.core.dto.PedidoDto;
 import br.com.pupposoft.fiap.sgr.pedido.core.dto.ProdutoDto;
+import br.com.pupposoft.fiap.sgr.pedido.core.exception.ErrorToNotifiyException;
 import br.com.pupposoft.fiap.sgr.pedido.core.exception.ProdutoNotFoundException;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.ClienteGateway;
+import br.com.pupposoft.fiap.sgr.pedido.core.gateway.NotificarGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.PedidoGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.ProdutoGateway;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @AllArgsConstructor
+@Slf4j
 public class CriarPedidoUseCaseImpl implements CriarPedidoUseCase {
 
 	private ClienteGateway clienteGateway;
@@ -28,16 +34,44 @@ public class CriarPedidoUseCaseImpl implements CriarPedidoUseCase {
 	
 	private PedidoGateway pedidoGateway;
 	
+	private NotificarGateway notificarGateway;
+	
 	@Override
 	public Long criar(PedidoDto pedidoDto) {
 	    Pedido pedido = mapDtoToDomain(pedidoDto);
 
-	    this.verificaRemoveClienteInexistente(pedido);
+	    Optional<ClienteDto> clienteDtoOp = clienteGateway.obterPorId(pedido.getCliente().getId());
+	    
+	    this.verificaRemoveClienteInexistente(clienteDtoOp, pedido);
 	    this.carregaProdutosIntoPedido(pedido);
 
 	    pedido.setStatus(Status.RECEBIDO);//Execução de regras dentro do domain
 
-	    return this.pedidoGateway.criar(mapDomainToDto(pedido));
+	    Long pedidoId = this.pedidoGateway.criar(mapDomainToDto(pedido));
+	    
+	    notificaCliente(pedido, clienteDtoOp, pedidoId);
+	    
+	    return pedidoId;
+	}
+
+
+	private void notificaCliente(Pedido pedido, Optional<ClienteDto> clienteDtoOp, Long pedidoId) {
+		if(clienteDtoOp.isPresent()) {
+	    	ClienteDto clienteDto = clienteDtoOp.get();
+	    	List<String> destinarios = Arrays.asList(clienteDto.getEmail(), clienteDto.getTelefone());
+	    	
+	    	try {
+	    		notificarGateway.notificar(NotificarDto.builder()
+	    				.assunto("Status pedido: " + pedidoId)
+	    				.conteudo("O status do seu pedido é " + pedido.getStatus().name())
+	    				.destinatarios(destinarios)
+	    				.build());
+				
+			} catch (ErrorToNotifiyException e) {
+				log.warn("Erro ao notificar o cliente");
+			}
+	    	
+	    }
 	}
 
 
@@ -58,8 +92,7 @@ public class CriarPedidoUseCaseImpl implements CriarPedidoUseCase {
 	}
 
 	
-	  private void verificaRemoveClienteInexistente(Pedido pedido) {
-		  Optional<ClienteDto> clienteDtoOp = clienteGateway.obterPorId(pedido.getCliente().getId());
+	  private void verificaRemoveClienteInexistente(Optional<ClienteDto> clienteDtoOp, Pedido pedido) {
 		  if(clienteDtoOp.isEmpty()) {
 			  pedido.removerCliente();
 		  }

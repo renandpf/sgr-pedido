@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.pupposoft.fiap.sgr.pedido.core.controller.PedidoController;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.ClienteGateway;
+import br.com.pupposoft.fiap.sgr.pedido.core.gateway.NotificarGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.PagamentoGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.PedidoGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.ProdutoGateway;
@@ -36,6 +37,9 @@ class PedidoDIConfigurationUnitTest {
 
 	@Mock
 	private ProdutoGateway produtoGateway;
+	
+	@Mock
+	private NotificarGateway notificarGateway;
 
 	@Test
 	void atualizarStatusPedidoUseCase() {
@@ -53,6 +57,7 @@ class PedidoDIConfigurationUnitTest {
 		assertEquals(pedidoGateway, getField(criarPedidoUseCase, "pedidoGateway"));
 		assertEquals(produtoGateway, getField(criarPedidoUseCase, "produtoGateway"));
 		assertEquals(pedidoGateway, getField(criarPedidoUseCase, "pedidoGateway"));
+		assertEquals(notificarGateway, getField(criarPedidoUseCase, "notificarGateway"));
 	}
 	
 	@Test
