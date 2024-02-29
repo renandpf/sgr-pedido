@@ -17,6 +17,7 @@ public class Pedido {
 	
 	@Setter
 	private Long id;
+	@Setter
     private Cliente cliente;
     private String observacao;
     private Status status;

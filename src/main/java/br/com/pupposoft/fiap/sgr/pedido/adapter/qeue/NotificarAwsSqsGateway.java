@@ -1,5 +1,6 @@
 package br.com.pupposoft.fiap.sgr.pedido.adapter.qeue;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Async;
@@ -17,8 +18,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NotificarAwsSqsGateway implements NotificarGateway{
 
+	@Autowired//NOSONAR
 	private JmsTemplate notifyClienteTemplate;
 	
+	@Autowired//NOSONAR
 	private ObjectMapper mapper;
 	
 	@Async//Para não travar o fluxo de criação de pedido 
