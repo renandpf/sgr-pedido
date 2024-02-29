@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Profile({"prd"})
 @Slf4j
 @Component
-public class EfetuarPagamantoAwsSqsGateway implements EfetuarPagamentoGateway {
+public class EfetuarPagamentoAwsSqsGateway implements EfetuarPagamentoGateway {
 
 	@Autowired//NOSONAR
 	private JmsTemplate efetuarPagamentoTemplate;
