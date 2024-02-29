@@ -7,6 +7,7 @@ import org.springframework.context.annotation.DependsOn;
 
 import br.com.pupposoft.fiap.sgr.pedido.core.controller.PedidoController;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.ClienteGateway;
+import br.com.pupposoft.fiap.sgr.pedido.core.gateway.EfetuarPagamentoGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.NotificarGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.PagamentoGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.PedidoGateway;
@@ -33,6 +34,8 @@ public class PedidoDIConfiguration {
 	
 	private NotificarGateway noticarGateway;
 
+	private EfetuarPagamentoGateway efetuarPagamentoGateway;
+	
 	@Bean
 	@Autowired
 	@DependsOn("obterPedidoUseCase")
@@ -42,7 +45,7 @@ public class PedidoDIConfiguration {
 
 	@Bean
 	public CriarPedidoUseCase criarPedidoUseCase() {
-		return new CriarPedidoUseCaseImpl(clienteGateway, produtoGateway, pedidoGateway, noticarGateway);
+		return new CriarPedidoUseCaseImpl(clienteGateway, produtoGateway, pedidoGateway, noticarGateway, efetuarPagamentoGateway);
 	}
 	
 	@Bean

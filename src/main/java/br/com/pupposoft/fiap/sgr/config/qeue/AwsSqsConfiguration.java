@@ -27,6 +27,8 @@ import software.amazon.awssdk.services.sqs.SqsClient;
 @RequiredArgsConstructor
 public class AwsSqsConfiguration {
 
+	private static final String AWS_PROFILE = "awsProfile";
+
 	@Value("${cloud.sqs.concurrency}")
 	private String concurrency;
 
@@ -35,6 +37,9 @@ public class AwsSqsConfiguration {
 	
 	@Value("${cloud.sqs.notificar-cliente.endpoint}")
 	private String endpointNotificarCliente;
+	
+	@Value("${cloud.sqs.efetuar-pagamento.endpoint}")
+	private String endpointEfetuarPagamento;
 
 	@NonNull
 	private Environment environment;
@@ -53,12 +58,17 @@ public class AwsSqsConfiguration {
     public JmsTemplate notifyClienteTemplate() {
         return new JmsTemplate(createSQSConnectionFactoryNotifyClient());
     }
+	
+	@Bean
+	public JmsTemplate efetuarPagamentoTemplate() {
+		return new JmsTemplate(createSQSConnectionFactoryEfetuarPagamento());
+	}
 
 	private SQSConnectionFactory createSQSConnectionFactoryStatusPedido() {
 
 		final SqsClient sqsClient;
 
-		String awsProfile = environment.getProperty("awsProfile");
+		String awsProfile = environment.getProperty(AWS_PROFILE);
 		if(awsProfile == null) {
 			sqsClient = SqsClient.builder()
 					.region(Region.US_WEST_2)
@@ -82,7 +92,7 @@ public class AwsSqsConfiguration {
 		
 		final SqsClient sqsClient;
 		
-		String awsProfile = environment.getProperty("awsProfile");
+		String awsProfile = environment.getProperty(AWS_PROFILE);
 		if(awsProfile == null) {
 			sqsClient = SqsClient.builder()
 					.region(Region.US_WEST_2)
@@ -98,6 +108,29 @@ public class AwsSqsConfiguration {
 					.build();
 		}
 		
+		
+		return new SQSConnectionFactory(new ProviderConfiguration(), sqsClient);
+	}
+	
+	private SQSConnectionFactory createSQSConnectionFactoryEfetuarPagamento() {
+		
+		final SqsClient sqsClient;
+		
+		String awsProfile = environment.getProperty(AWS_PROFILE);
+		if(awsProfile == null) {
+			sqsClient = SqsClient.builder()
+					.region(Region.US_WEST_2)
+					.endpointOverride(URI.create(endpointEfetuarPagamento))
+					.credentialsProvider(EnvironmentVariableCredentialsProvider.create())//AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and AWS_SESSION_TOKEN environment variables
+					.build();
+		} else {
+			ProfileCredentialsProvider awsProvider = ProfileCredentialsProvider.create(awsProfile);
+			sqsClient = SqsClient.builder()
+					.region(Region.US_WEST_2)
+					.endpointOverride(URI.create(endpointEfetuarPagamento))
+					.credentialsProvider(awsProvider)
+					.build();
+		}
 		
 		return new SQSConnectionFactory(new ProviderConfiguration(), sqsClient);
 	}

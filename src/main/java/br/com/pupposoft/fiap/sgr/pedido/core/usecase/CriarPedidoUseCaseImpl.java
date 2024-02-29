@@ -18,6 +18,7 @@ import br.com.pupposoft.fiap.sgr.pedido.core.dto.ProdutoDto;
 import br.com.pupposoft.fiap.sgr.pedido.core.exception.ErrorToNotifiyException;
 import br.com.pupposoft.fiap.sgr.pedido.core.exception.ProdutoNotFoundException;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.ClienteGateway;
+import br.com.pupposoft.fiap.sgr.pedido.core.gateway.EfetuarPagamentoGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.NotificarGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.PedidoGateway;
 import br.com.pupposoft.fiap.sgr.pedido.core.gateway.ProdutoGateway;
@@ -36,6 +37,8 @@ public class CriarPedidoUseCaseImpl implements CriarPedidoUseCase {
 	
 	private NotificarGateway notificarGateway;
 	
+	private EfetuarPagamentoGateway efetuarPagamentoGateway;
+	
 	@Override
 	public Long criar(PedidoDto pedidoDto) {
 	    Pedido pedido = mapDtoToDomain(pedidoDto);
@@ -49,7 +52,11 @@ public class CriarPedidoUseCaseImpl implements CriarPedidoUseCase {
 
 	    Long pedidoId = this.pedidoGateway.criar(mapDomainToDto(pedido));
 	    
+	    pedido.setId(pedidoId);
+	    
 	    notificaCliente(pedido, clienteDtoOp, pedidoId);
+	    
+	    efetuarPagamentoGateway.efetuarPagamento(pedido);
 	    
 	    return pedidoId;
 	}
@@ -73,8 +80,7 @@ public class CriarPedidoUseCaseImpl implements CriarPedidoUseCase {
 	    	
 	    }
 	}
-
-
+	
 	private Pedido mapDtoToDomain(PedidoDto pedidoDto) {
 		
 		return Pedido.builder()
