@@ -7,13 +7,17 @@ import java.util.List;
 import br.com.pupposoft.fiap.sgr.pedido.core.exception.AlteracaoStatusPedidoException;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @Getter
 @ToString
 @Builder
 public class Pedido {
+	
+	@Setter
 	private Long id;
+	@Setter
     private Cliente cliente;
     private String observacao;
     private Status status;

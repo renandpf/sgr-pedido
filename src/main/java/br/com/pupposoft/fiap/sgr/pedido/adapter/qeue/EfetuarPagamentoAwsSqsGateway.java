@@ -8,38 +8,36 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import br.com.pupposoft.fiap.sgr.pedido.core.dto.NotificarDto;
+import br.com.pupposoft.fiap.sgr.pedido.adapter.qeue.json.PedidoMessageJson;
+import br.com.pupposoft.fiap.sgr.pedido.core.domain.Pedido;
 import br.com.pupposoft.fiap.sgr.pedido.core.exception.ErrorToNotifiyException;
-import br.com.pupposoft.fiap.sgr.pedido.core.gateway.NotificarGateway;
+import br.com.pupposoft.fiap.sgr.pedido.core.gateway.EfetuarPagamentoGateway;
 import lombok.extern.slf4j.Slf4j;
 
 @Profile({"prd"})
-@Component
 @Slf4j
-public class NotificarAwsSqsGateway implements NotificarGateway{
+@Component
+public class EfetuarPagamentoAwsSqsGateway implements EfetuarPagamentoGateway {
 
 	@Autowired//NOSONAR
-	private JmsTemplate notifyClienteTemplate;
+	private JmsTemplate efetuarPagamentoTemplate;
 	
 	@Autowired//NOSONAR
 	private ObjectMapper mapper;
 	
 	@Async//Para não travar o fluxo de criação de pedido 
 	@Override
-	public void notificar(NotificarDto dto) {
-		
+	public void efetuarPagamento(Pedido pedido) {
 		try {
 			
-			String dtoJsonStr = mapper.writeValueAsString(dto);
+			String message = mapper.writeValueAsString(new PedidoMessageJson(pedido));
 			
-			notifyClienteTemplate.convertAndSend("notificar-qeue", dtoJsonStr);
+			efetuarPagamentoTemplate.convertAndSend("efetuar-pagamento-qeue", message);
 			
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			throw new ErrorToNotifiyException();
 		}
-
-		
 	}
 
 }
